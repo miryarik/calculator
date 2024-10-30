@@ -57,3 +57,20 @@ const divide = (a, b) => {
     const ratioString = (Number(a) / Number(b)).toString();
     return ratioString;
 }
+
+// get display
+const display = document.querySelector('#display');
+
+// clear button
+const clearBtn = document.querySelector('#clear-btn');
+clearBtn.onclick = () => display.innerText = '';
+
+// attach event listener
+// controls
+const numKeys = document.querySelectorAll('.num-row div');
+
+numKeys.forEach(numKey => {
+    numKey.addEventListener('click', (event) => {
+        display.innerText += numKey.innerText;
+    })
+})
