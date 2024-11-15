@@ -35,6 +35,7 @@ function appendDisplayContent(string) {
 
 
 
+
 function operate(operandLeft, operator, operandRight) {
 
     // perform operation on left and right operands according
@@ -115,6 +116,7 @@ clearBtn.onclick = () => {
 const numKeys = document.querySelectorAll('.num-row div');
 
 numKeys.forEach(numKey => {
+
     numKey.addEventListener('click', (event) => {
         appendDisplayContent(numKey.innerText);
     })
@@ -126,18 +128,36 @@ const operators = document.querySelectorAll('.operators div');
 operators.forEach(opKey => {
     opKey.addEventListener('click', (event) => {
         
-        let opSymbol = event.target.innerText === '=';
+        // get clicked symbol
+        let opSymbol = event.target.innerText;
 
         if (opSymbol === '=') {
+            operandRight = getDisplayContent();
             operandLeft = operate(operandLeft, operator, operandRight);
             setDisplayContent(operandLeft);
+            operandRight = 0;
+            operator = '=';
+
+        } else {
+            if ((operator === '=')) {
+                operandLeft = getDisplayContent();
+                operator = opSymbol;
+                setDisplayContent(0);
+
+            } else {
+                operandRight = getDisplayContent();
+                operandLeft = operate(operandLeft, operator, operandRight);
+                setDisplayContent(operandLeft);
+                operator = opSymbol;
+            }
+
+            // operator = opSymbol;
+            // setDisplayContent(0);
+            // operandLeft = operate(operandLeft, opSymbol, getDisplayContent());
         }
-        else {
-            operandLeft = operate(operandLeft, opSymbol, getDisplayContent());
-        }
+
+        console.log(operandLeft,operator, operandRight);
+        
 
     })
 })
-
-
-// 
