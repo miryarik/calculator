@@ -1,8 +1,39 @@
 // variables to keep the expression to evaluate :
 //      two operands and an operator
-let operandLeft
-let operator
-let operandRight
+let operandLeft = 0;
+let operator = '=';
+let operandRight = 0;
+
+// contents of the display
+const DISPLAY_MAX_LENGTH = 10;
+
+// get display
+const display = document.querySelector('#display');
+
+
+function getDisplayContent() {
+    // get contents of display and return as a Number
+    return Number(display.innerText);
+}
+
+function setDisplayContent(num) {
+    // set contents of display to a string made from a given number
+    display.innerText = num.toString();
+    
+}
+
+function appendDisplayContent(string) {
+    // append a given string to contents of display
+    if (display.innerText === '0') {
+        display.innerText = '';
+        display.innerText += string;
+    }
+    else {
+        display.innerText += string;
+    }
+}
+
+
 
 function operate(operandLeft, operator, operandRight) {
 
@@ -20,50 +51,64 @@ function operate(operandLeft, operator, operandRight) {
             break;
         
         case '*':
-            return multiply(operandLeft.operandRight);
+            return multiply(operandLeft, operandRight);
             break;
         
         case '/':
-            return divide(operandLeft.operandRight);
+            return divide(operandLeft, operandRight);
             break;
+
+        default:
+            setDisplayContent(operandLeft);
+            return operandLeft;
     }
 }
+
+
+
 
 
 const add = (a, b) => {
     // takes two input strings, adds them as numbers
     // returns the sum as string
-    const sumString = (Number(a) + Number(b)).toString();
+    const sumString = (Number(a) + Number(b));
     return sumString;
 }
 
 const subtract = (a, b) => {
     // takes two input strings, subtracts them as numbers
     // returns the difference as string
-    const differenceString = (Number(a) - Number(b)).toString();
+    const differenceString = (Number(a) - Number(b));
     return differenceString;
 }
 
 const multiply = (a, b) => {
     // takes two input strings, multiplies them as numbers
     // returns the product as string
-    const productString = (Number(a) * Number(b)).toString();
+    const productString = (Number(a) * Number(b));
     return productString;
 }
 
 const divide = (a, b) => {
     // takes two input strings, divides them as numbers
     // returns the ratio as string
-    const ratioString = (Number(a) / Number(b)).toString();
+    const ratioString = (Number(a) / Number(b));
     return ratioString;
 }
 
-// get display
-const display = document.querySelector('#display');
+
+
+
 
 // clear button
 const clearBtn = document.querySelector('#clear-btn');
-clearBtn.onclick = () => display.innerText = '';
+clearBtn.onclick = () => {
+    setDisplayContent('0');
+    operandLeft = 0;
+    operandRight = 0;
+    operator = '=';
+};
+
 
 // attach event listener
 // controls
@@ -71,6 +116,28 @@ const numKeys = document.querySelectorAll('.num-row div');
 
 numKeys.forEach(numKey => {
     numKey.addEventListener('click', (event) => {
-        display.innerText += numKey.innerText;
+        appendDisplayContent(numKey.innerText);
     })
 })
+
+// operators
+const operators = document.querySelectorAll('.operators div');
+
+operators.forEach(opKey => {
+    opKey.addEventListener('click', (event) => {
+        
+        let opSymbol = event.target.innerText === '=';
+
+        if (opSymbol === '=') {
+            operandLeft = operate(operandLeft, operator, operandRight);
+            setDisplayContent(operandLeft);
+        }
+        else {
+            operandLeft = operate(operandLeft, opSymbol, getDisplayContent());
+        }
+
+    })
+})
+
+
+// 
