@@ -17,6 +17,12 @@ const display = document.querySelector('#display');
 
 
 function getDisplayContent() {
+
+    // !!!!
+    // this does suffice but will cause errors in cases of large numbers
+    // because the left operand never gets the precision reduced value
+    // instead it keeps the original
+
     // get contents of display and return as a Number
     return Number(display.innerText);
 }
@@ -26,7 +32,15 @@ function setDisplayContent(num) {
     let displayContents = num.toString();
 
     if (displayContents.length >= DISPLAY_MAX_LENGTH) {
-        displayContents = num.toPrecision(DISPLAY_MAX_LENGTH - 1);
+        displayContents = num.toPrecision(DISPLAY_MAX_LENGTH).toString();
+
+        if (displayContents.length >= DISPLAY_MAX_LENGTH && displayContents.includes('e')) {
+            // here add logic to show exp
+            let exp = "";
+            [displayContents, exp] = displayContents.split('e');
+
+
+        }
     }
 
     display.innerText = displayContents;
@@ -55,7 +69,6 @@ function appendDisplayContent(string) {
         }
         
     } 
-
 
 }
 
@@ -125,8 +138,6 @@ const divide = (a, b) => {
 
 
 
-
-
 // clear button
 const clearBtn = document.querySelector('#clear-btn');
 clearBtn.onclick = () => {
@@ -134,6 +145,7 @@ clearBtn.onclick = () => {
     operandLeft = 0;
     operandRight = 0;
     operator = '=';
+    replaceDisplay = false;
 };
 
 
@@ -157,39 +169,34 @@ operators.forEach(opKey => {
         // get clicked symbol
         let opSymbol = event.target.innerText;
 
+        // = is clicked
         if (opSymbol === '=') {
             operandRight = getDisplayContent();
             operandLeft = operate(operandLeft, operator, operandRight);
             setDisplayContent(operandLeft);
-            
             operandRight = 0;
             operator = '=';
-
+            replaceDisplay = true;
+         
         } else {
 
+            // some operator was clicked
+
+            // not expecting right operand
             if ((operator === '=')) {
                 operandLeft = getDisplayContent();
                 operator = opSymbol;
                 setDisplayContent(0);
-                console.log("from if");
 
             } else {
+                // expecting right operand
                 operandRight = getDisplayContent();
                 operandLeft = operate(operandLeft, operator, operandRight);
                 operator = opSymbol;
                 setDisplayContent(operandLeft);
                 replaceDisplay = true;
-                console.log("from else");
             }
-
-            
-            // operator = opSymbol;
-            // setDisplayContent(0);
-            // operandLeft = operate(operandLeft, opSymbol, getDisplayContent());
         }
-
-        console.log(operandLeft,operator, operandRight);
-        
 
     })
 })
