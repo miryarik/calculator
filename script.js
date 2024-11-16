@@ -4,7 +4,12 @@ let operandLeft = 0;
 let operator = '=';
 let operandRight = 0;
 
-// contents of the display
+// a boolean to indicate if input should be appended to current display
+// or input should replace current input
+// on the next number click
+let replaceDisplay = false;
+
+// max length of contents supported by the display
 const DISPLAY_MAX_LENGTH = 10;
 
 // get display
@@ -18,19 +23,40 @@ function getDisplayContent() {
 
 function setDisplayContent(num) {
     // set contents of display to a string made from a given number
-    display.innerText = num.toString();
+    let displayContents = num.toString();
+
+    if (displayContents.length >= DISPLAY_MAX_LENGTH) {
+        displayContents = num.toPrecision(DISPLAY_MAX_LENGTH - 1);
+    }
+
+    display.innerText = displayContents;
     
 }
 
 function appendDisplayContent(string) {
     // append a given string to contents of display
-    if (display.innerText === '0') {
-        display.innerText = '';
-        display.innerText += string;
-    }
-    else {
-        display.innerText += string;
-    }
+
+    if (display.innerText.length < DISPLAY_MAX_LENGTH) {
+        if (replaceDisplay) {
+    
+            display.innerText = '';
+            display.innerText += string;
+    
+        } else {
+    
+            if (display.innerText === '0') {
+                display.innerText = '';
+                display.innerText += string;
+            }
+            else {
+                display.innerText += string;
+            }
+    
+        }
+        
+    } 
+
+
 }
 
 
@@ -135,22 +161,28 @@ operators.forEach(opKey => {
             operandRight = getDisplayContent();
             operandLeft = operate(operandLeft, operator, operandRight);
             setDisplayContent(operandLeft);
+            
             operandRight = 0;
             operator = '=';
 
         } else {
+
             if ((operator === '=')) {
                 operandLeft = getDisplayContent();
                 operator = opSymbol;
                 setDisplayContent(0);
+                console.log("from if");
 
             } else {
                 operandRight = getDisplayContent();
                 operandLeft = operate(operandLeft, operator, operandRight);
-                setDisplayContent(operandLeft);
                 operator = opSymbol;
+                setDisplayContent(operandLeft);
+                replaceDisplay = true;
+                console.log("from else");
             }
 
+            
             // operator = opSymbol;
             // setDisplayContent(0);
             // operandLeft = operate(operandLeft, opSymbol, getDisplayContent());
