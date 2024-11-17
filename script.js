@@ -17,32 +17,17 @@ const display = document.querySelector('#display');
 
 
 function getDisplayContent() {
-
-    // !!!!
-    // this does suffice but will cause errors in cases of large numbers
-    // because the left operand never gets the precision reduced value
-    // instead it keeps the original
-
     // get contents of display and return as a Number
     return Number(display.innerText);
 }
 
 function setDisplayContent(num) {
+
+    // force cast to number
+    num = Number(num)
+    
     // set contents of display to a string made from a given number
     let displayContents = num.toString();
-
-    if (displayContents.length >= DISPLAY_MAX_LENGTH) {
-        displayContents = num.toPrecision(DISPLAY_MAX_LENGTH).toString();
-
-        if (displayContents.length >= DISPLAY_MAX_LENGTH && displayContents.includes('e')) {
-            // here add logic to show exp
-            let exp = "";
-            [displayContents, exp] = displayContents.split('e');
-
-
-        }
-    }
-
     display.innerText = displayContents;
     
 }
@@ -68,8 +53,34 @@ function appendDisplayContent(string) {
     
         }
         
-    } 
+    }
 
+}
+
+
+function controlLength(str) {
+    // function to control length of number to fit in display
+
+    str = str.toString();
+
+    if (str.length <= DISPLAY_MAX_LENGTH) {
+        return str;
+    }
+    
+    let num = Number(str);
+
+    if (Number.isInteger(num)) {
+        // long and integral
+        return str.slice(0, DISPLAY_MAX_LENGTH);
+
+    } else {
+        // long and floating
+        let intPart = Math.trunc(num).toString();
+        let floatLength = Math.max((DISPLAY_MAX_LENGTH - intPart.length - 1), 0);
+        let roundedNum = num.toFixed(floatLength).toString();
+
+        return roundedNum.length > DISPLAY_MAX_LENGTH ? roundedNum.slice(0, DISPLAY_MAX_LENGTH) : roundedNum;
+    }
 }
 
 
@@ -106,34 +117,32 @@ function operate(operandLeft, operator, operandRight) {
 
 
 
-
-
 const add = (a, b) => {
     // takes two input strings, adds them as numbers
     // returns the sum as string
     const sumString = (Number(a) + Number(b));
-    return sumString;
+    return controlLength(sumString);
 }
 
 const subtract = (a, b) => {
     // takes two input strings, subtracts them as numbers
     // returns the difference as string
     const differenceString = (Number(a) - Number(b));
-    return differenceString;
+    return controlLength(differenceString);
 }
 
 const multiply = (a, b) => {
     // takes two input strings, multiplies them as numbers
     // returns the product as string
     const productString = (Number(a) * Number(b));
-    return productString;
+    return controlLength(productString);
 }
 
 const divide = (a, b) => {
     // takes two input strings, divides them as numbers
     // returns the ratio as string
     const ratioString = (Number(a) / Number(b));
-    return ratioString;
+    return controlLength(ratioString);
 }
 
 
@@ -148,6 +157,21 @@ clearBtn.onclick = () => {
     replaceDisplay = false;
 };
 
+// sign button
+const signBtn = document.querySelector('#sign-btn');
+signBtn.onclick = () => {
+    let num = getDisplayContent();
+    num = operate(num, '*', -1);
+    setDisplayContent(num);
+}
+
+const percentBtn = document.querySelector('#percent-btn');
+percentBtn.onclick = () => {
+    let num = getDisplayContent();
+    num = operate(num, '/', 100);
+    setDisplayContent(num);
+}
+
 
 // attach event listener
 // controls
@@ -157,6 +181,7 @@ numKeys.forEach(numKey => {
 
     numKey.addEventListener('click', (event) => {
         appendDisplayContent(numKey.innerText);
+        replaceDisplay = false;
     })
 })
 

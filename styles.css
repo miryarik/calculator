@@ -8,10 +8,6 @@ body {
     margin: 100px auto;
 }
 
-#calculator div {
-    
-}
-
 #calculator {
     background-color: #f1f2f4;
     height: 600px;
@@ -46,7 +42,7 @@ body {
     height: 100%;
 }
 
-.controls #second-btn {
+.controls #sign-btn {
     border-right: solid 4px gray;
     border-left: solid 4px gray;
 }
