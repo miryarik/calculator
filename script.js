@@ -2,7 +2,7 @@
 //      two operands and an operator
 let operandLeft = 0;
 let operator = '=';
-let operandRight = NaN;
+let operandRight = 0;
 
 // a boolean to indicate if input should be appended to current display
 // or input should replace current input
@@ -161,7 +161,7 @@ const clearBtn = document.querySelector('#clear-btn');
 clearBtn.onclick = () => {
     setDisplayContent('0');
     operandLeft = 0;
-    operandRight = NaN;
+    operandRight = 0;
     operator = '=';
     replaceDisplay = false;
 };
@@ -199,7 +199,7 @@ numKeys.forEach(numKey => {
         // dont allow multiple '.'
 
         numKey.onclick = () => {
-            if (!getDisplayContent().toString().includes('.')) {
+            if (!display.innerText.includes('.')) {
                 console.log(numKey.innerText);
                 appendDisplayContent(numKey.innerText);
                 replaceDisplay = false;
@@ -224,40 +224,30 @@ operators.forEach(opKey => {
 
             operandRight = getDisplayContent();
             operandLeft = operate(operandLeft, operator, operandRight);
-            operandRight = NaN;
             setDisplayContent(operandLeft);
             operandRight = 0;
             operator = '=';
             replaceDisplay = true;
-         
+
         } else {
 
             // some operator was clicked
 
-            // expecting left operand
+            // left operand is on display
             if ((operator === '=')) {
                 operandLeft = getDisplayContent();
                 operator = opSymbol;
                 setDisplayContent(0);
-
-            } else {
-                // expecting right operand
                 
-                if (isNaN(operandRight)) {
-                    operator = opSymbol;
+            } else {
 
-                } else {
-                    
+                // right operand is on display
                     operandRight = getDisplayContent();
                     operandLeft = operate(operandLeft, operator, operandRight);
-                    operandRight = NaN;
                     operator = opSymbol;
                     setDisplayContent(operandLeft);
                     replaceDisplay = true;
-                }
-
             }
         }
-
-    })
-})
+    });
+});
