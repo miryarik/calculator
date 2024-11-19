@@ -2,7 +2,7 @@
 //      two operands and an operator
 let operandLeft = 0;
 let operator = '=';
-let operandRight = 0;
+let operandRight = NaN;
 
 // a boolean to indicate if input should be appended to current display
 // or input should replace current input
@@ -94,8 +94,6 @@ function controlLength(str) {
 }
 
 
-
-
 function operate(operandLeft, operator, operandRight) {
 
     // perform operation on left and right operands according
@@ -105,19 +103,15 @@ function operate(operandLeft, operator, operandRight) {
     switch (operator) {
         case '+':
             return add(operandLeft, operandRight);
-            break;
         
         case '-':
             return subtract(operandLeft, operandRight);
-            break;
         
         case '*':
             return multiply(operandLeft, operandRight);
-            break;
         
         case '/':
             return divide(operandLeft, operandRight);
-            break;
 
         default:
             setDisplayContent(operandLeft);
@@ -167,7 +161,7 @@ const clearBtn = document.querySelector('#clear-btn');
 clearBtn.onclick = () => {
     setDisplayContent('0');
     operandLeft = 0;
-    operandRight = 0;
+    operandRight = NaN;
     operator = '=';
     replaceDisplay = false;
 };
@@ -227,8 +221,10 @@ operators.forEach(opKey => {
 
         // = is clicked
         if (opSymbol === '=') {
+
             operandRight = getDisplayContent();
             operandLeft = operate(operandLeft, operator, operandRight);
+            operandRight = NaN;
             setDisplayContent(operandLeft);
             operandRight = 0;
             operator = '=';
@@ -238,7 +234,7 @@ operators.forEach(opKey => {
 
             // some operator was clicked
 
-            // not expecting right operand
+            // expecting left operand
             if ((operator === '=')) {
                 operandLeft = getDisplayContent();
                 operator = opSymbol;
@@ -246,11 +242,20 @@ operators.forEach(opKey => {
 
             } else {
                 // expecting right operand
-                operandRight = getDisplayContent();
-                operandLeft = operate(operandLeft, operator, operandRight);
-                operator = opSymbol;
-                setDisplayContent(operandLeft);
-                replaceDisplay = true;
+                
+                if (isNaN(operandRight)) {
+                    operator = opSymbol;
+
+                } else {
+                    
+                    operandRight = getDisplayContent();
+                    operandLeft = operate(operandLeft, operator, operandRight);
+                    operandRight = NaN;
+                    operator = opSymbol;
+                    setDisplayContent(operandLeft);
+                    replaceDisplay = true;
+                }
+
             }
         }
 
