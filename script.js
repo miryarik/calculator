@@ -23,13 +23,23 @@ function getDisplayContent() {
 
 function setDisplayContent(num) {
 
+    
     // force cast to number
     num = Number(num)
     
-    // set contents of display to a string made from a given number
-    let displayContents = num.toString();
-    display.innerText = displayContents;
-    
+    if (isNaN(num)) {
+        display.innerText = "Calling 911";
+
+    } else if (num === Infinity) {
+        display.innerText = "Bad Divisor";
+
+    } else {
+        
+        // set contents of display to a string made from a given number
+        let displayContents = num.toString();
+        display.innerText = displayContents;
+
+    }
 }
 
 function appendDisplayContent(string) {
@@ -141,6 +151,11 @@ const multiply = (a, b) => {
 const divide = (a, b) => {
     // takes two input strings, divides them as numbers
     // returns the ratio as string
+    
+    if (Number(b) === 0) {
+        return controlLength(Infinity);
+    }
+
     const ratioString = (Number(a) / Number(b));
     return controlLength(ratioString);
 }
@@ -178,12 +193,28 @@ percentBtn.onclick = () => {
 const numKeys = document.querySelectorAll('.num-row div');
 
 numKeys.forEach(numKey => {
+    
+    if (numKey.innerText !== '.') {
+        
+        numKey.addEventListener('click', (event) => {
+            appendDisplayContent(numKey.innerText);
+            replaceDisplay = false;
+        });
 
-    numKey.addEventListener('click', (event) => {
-        appendDisplayContent(numKey.innerText);
-        replaceDisplay = false;
-    })
-})
+    } else {
+        // dont allow multiple '.'
+
+        numKey.onclick = () => {
+            if (!getDisplayContent().toString().includes('.')) {
+                console.log(numKey.innerText);
+                appendDisplayContent(numKey.innerText);
+                replaceDisplay = false;
+            }
+        }
+    }
+});
+
+
 
 // operators
 const operators = document.querySelectorAll('.operators div');
