@@ -31,10 +31,10 @@ function setDisplayContent(num) {
     num = Number(num)
     
     if (isNaN(num)) {
-        display.innerText = "Calling 911";
+        display.innerText = "Call 911";
 
     } else if (num === Infinity) {
-        display.innerText = "Bad Divisor";
+        display.innerText = "0 Divisor";
 
     } else {
         
@@ -177,11 +177,52 @@ signBtn.onclick = () => {
     setDisplayContent(num);
 }
 
+// percent button
 const percentBtn = document.querySelector('#percent-btn');
 percentBtn.onclick = () => {
     let num = getDisplayContent();
     num = operate(num, '/', 100);
     setDisplayContent(num);
+}
+
+// backspace
+function handleBackspace() {
+
+    let content = getDisplayContent();
+
+    // if there is a non zero number on display
+    if (content !== 0 || !isNaN(content)) {
+
+        // and its not time to replace display
+        if (!replaceDisplay) {
+            
+            // remove the last character from display
+            content = content.toString().slice(0,-1);
+            setDisplayContent(content);
+        } else {
+
+            // if it is time to replace display
+            // its as good as clear
+            setDisplayContent(0);
+            operandLeft = 0;
+            operandRight = 0;
+            operator = '=';
+            replaceDisplay = false;
+        }
+
+    }
+}
+
+const backspaceBtn = document.querySelector('#backspace-btn');
+backspaceBtn.onclick = () => {
+    handleBackspace();
+}
+
+// what happens when numpad button is clicked
+function handleNumClick(key) {
+    appendDisplayContent(key);
+    replaceDisplay = false;
+    lastInputWasOperator = false;
 }
 
 
@@ -194,9 +235,7 @@ numKeys.forEach(numKey => {
     if (numKey.innerText !== '.') {
         
         numKey.addEventListener('click', (event) => {
-            appendDisplayContent(numKey.innerText);
-            replaceDisplay = false;
-            lastInputWasOperator = false;
+            handleNumClick(numKey.innerText);
         });
 
     } else {
@@ -204,13 +243,78 @@ numKeys.forEach(numKey => {
 
         numKey.onclick = () => {
             if (!display.innerText.includes('.')) {
-                appendDisplayContent(numKey.innerText);
-                replaceDisplay = false;
-                lastInputWasOperator = false;
+                handleNumClick(numKey.innerText);
             }
         }
     }
 });
+
+
+// keyboard support
+const calculator = document.querySelector('html');
+
+calculator.addEventListener('keydown', (event) => {
+    
+    let code = event.code.toString();
+    let keyPressed = null;
+    opSymbols = ['Add', 'Subtract', 'Multiply', 'Divide', 'Enter'];
+    
+    
+    if (code.includes('Numpad')) {
+        // numpad presses
+        [, keyPressed] = code.split('Numpad');
+
+        if (keyPressed === 'Decimal') {
+            
+            keyPressed = '.';
+            if (!display.innerText.includes('.')) {
+                handleNumClick(keyPressed);
+            }
+
+        } else if (opSymbols.includes(keyPressed)) {
+            switch (keyPressed) {
+
+                case 'Add':
+                    handleOperations('+');
+                    break;
+
+                case 'Subtract':
+                    handleOperations('-');
+                    break;
+                
+                case 'Multiply':
+                    handleOperations('*');
+                    break;
+
+                case 'Divide':
+                    handleOperations('/');
+                    break;
+
+                case 'Enter':
+                    handleOperations('=');
+                    break
+            }
+        } 
+        else {
+            handleNumClick(keyPressed);
+        }
+        
+
+    } else if (code.includes('Digit')) {
+        // digit presses
+        [, keyPressed] = code.split('Digit');
+        handleNumClick(keyPressed);
+
+    } else if (code.includes('Backspace')) {
+        handleBackspace();
+
+    } else if (code.includes('Enter')) {
+        keyPressed = '=';
+    }
+  
+    
+});
+
 
 
 
@@ -224,40 +328,47 @@ operators.forEach(opKey => {
         let opSymbol = event.target.innerText;
 
         // = is clicked
-        if (opSymbol === '=') {
-
-            operandRight = getDisplayContent();
-            operandLeft = operate(operandLeft, operator, operandRight);
-            setDisplayContent(operandLeft);
-            operandRight = 0;
-            operator = '=';
-            replaceDisplay = true;
-
-        } else {
-
-            // some operator was clicked
-            
-            // left operand is on display
-            if ((operator === '=')) {
-                operandLeft = getDisplayContent();
-                operator = opSymbol;
-                lastInputWasOperator = true;
-                setDisplayContent(0);
-                
-            } else {
-
-                // right operand is on display
-
-                if (!lastInputWasOperator) {
-                    operandRight = getDisplayContent();
-                    operandLeft = operate(operandLeft, operator, operandRight);
-                    operator = opSymbol;
-                    setDisplayContent(operandLeft);
-                    replaceDisplay = true;
-                } else {
-                    operator = opSymbol;
-                }
-            }
-        }
+        handleOperations(opSymbol);
+        
     });
 });
+
+
+function handleOperations(opSymbol) {
+
+    if (opSymbol === '=') {
+
+        operandRight = getDisplayContent();
+        operandLeft = operate(operandLeft, operator, operandRight);
+        setDisplayContent(operandLeft);
+        operandRight = 0;
+        operator = '=';
+        replaceDisplay = true;
+
+    } else {
+
+        // some operator was clicked
+        
+        // left operand is on display
+        if ((operator === '=')) {
+            operandLeft = getDisplayContent();
+            operator = opSymbol;
+            lastInputWasOperator = true;
+            setDisplayContent(0);
+            
+        } else {
+
+            // right operand is on display
+
+            if (!lastInputWasOperator) {
+                operandRight = getDisplayContent();
+                operandLeft = operate(operandLeft, operator, operandRight);
+                operator = opSymbol;
+                setDisplayContent(operandLeft);
+                replaceDisplay = true;
+            } else {
+                operator = opSymbol;
+            }
+        }
+    }
+}
