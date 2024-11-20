@@ -20,21 +20,28 @@ const display = document.querySelector('#display');
 
 
 function getDisplayContent() {
+
     // get contents of display and return as a Number
+    const displayContent = display.innerText;
+    if (isNaN(displayContent)) return 0;
+
     return Number(display.innerText);
 }
 
 function setDisplayContent(num) {
-
     
     // force cast to number
     num = Number(num)
     
     if (isNaN(num)) {
         display.innerText = "Call 911";
+        operandLeft = 0;
+        replaceDisplay = true;
 
     } else if (num === Infinity) {
         display.innerText = "0 Divisor";
+        operandLeft = 0;
+        replaceDisplay = true;
 
     } else {
         
@@ -365,7 +372,9 @@ function handleOperations(opSymbol) {
                 operandLeft = operate(operandLeft, operator, operandRight);
                 operator = opSymbol;
                 setDisplayContent(operandLeft);
+                operandLeft = isNaN(operandLeft) ? 0 : operandLeft;
                 replaceDisplay = true;
+
             } else {
                 operator = opSymbol;
             }
