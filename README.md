@@ -1,2 +1,2 @@
 # calculator
-Simlpe calculator as practice project.
+Calculator project for TOP foundations.
