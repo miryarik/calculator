@@ -4,6 +4,9 @@ let operandLeft = 0;
 let operator = '=';
 let operandRight = 0;
 
+// boolean indicating an operator was clicked
+let lastInputWasOperator = false;
+
 // a boolean to indicate if input should be appended to current display
 // or input should replace current input
 // on the next number click
@@ -193,6 +196,7 @@ numKeys.forEach(numKey => {
         numKey.addEventListener('click', (event) => {
             appendDisplayContent(numKey.innerText);
             replaceDisplay = false;
+            lastInputWasOperator = false;
         });
 
     } else {
@@ -200,9 +204,9 @@ numKeys.forEach(numKey => {
 
         numKey.onclick = () => {
             if (!display.innerText.includes('.')) {
-                console.log(numKey.innerText);
                 appendDisplayContent(numKey.innerText);
                 replaceDisplay = false;
+                lastInputWasOperator = false;
             }
         }
     }
@@ -232,21 +236,27 @@ operators.forEach(opKey => {
         } else {
 
             // some operator was clicked
-
+            
             // left operand is on display
             if ((operator === '=')) {
                 operandLeft = getDisplayContent();
                 operator = opSymbol;
+                lastInputWasOperator = true;
                 setDisplayContent(0);
                 
             } else {
 
                 // right operand is on display
+
+                if (!lastInputWasOperator) {
                     operandRight = getDisplayContent();
                     operandLeft = operate(operandLeft, operator, operandRight);
                     operator = opSymbol;
                     setDisplayContent(operandLeft);
                     replaceDisplay = true;
+                } else {
+                    operator = opSymbol;
+                }
             }
         }
     });
